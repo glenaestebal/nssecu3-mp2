@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;net6.0</TargetFrameworks>
+    <AssemblyTitle>RecycleBin.Test</AssemblyTitle>
+    <Product>RecycleBin.Test</Product>
+    <Copyright>Eric Zimmerman</Copyright>
+    <LangVersion>10</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\RecycleBin\RecycleBin.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="6.11.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestFiles\Win10 - DEFCON 2018 Desktop\%24I2JRX90" />
+    <None Include="TestFiles\Win10 - DEFCON 2018 Desktop\%24IFATB0K" />
+    <None Include="TestFiles\Win7 - nfury\%24I6SODDB" />
+    <None Include="TestFiles\Win7 - nromanoff\%24IPFXZSB" />
+    <None Include="TestFiles\Win7 - nromanoff\%24ISEBKEC.zip" />
+    <None Include="TestFiles\Win8.1 - Donald Blake\%24I3VPA17" />
+    <None Include="TestFiles\Win8.1 - Donald Blake\%24IEMAANA" />
+    <None Include="TestFiles\Win8.1 - Donald Blake\%24IG1VEXX.xls" />
+    <None Include="TestFiles\Win8.1 - Donald Blake\%24ISFWPA9.xls" />
+    <None Include="TestFiles\WinXp - mueller1\INFO2" />
+    <None Include="TestFiles\WinXp - mueller1\INFO2_MultiFiles" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestFiles\Win7 - nfury\%24ID5HSV3.exe" />
+    <Content Include="TestFiles\Win7 - nfury\%24IZI9VH9.exe" />
+  </ItemGroup>
+</Project>
