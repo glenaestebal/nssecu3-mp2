@@ -1,9 +1,14 @@
 
 TO DO
 
-[] figure out how to open a file in shell
-	[] "type test.txt" 
-[] figure out the tools
-[]
-[]
-[]
+[x] run the tools (needed to download .NET framework)
+[] figure out how to run an external process
+	[] run RBCmd
+	[] run RecentFileCacheParser
+[] figure out how to use the tools
+[] establish how to use them
+	[] using them both
+[] establish arguments
+	[] run with arguments
+	[] capture output
+
