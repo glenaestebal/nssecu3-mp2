@@ -1,0 +1,9 @@
+
+TO DO
+
+[] figure out how to open a file in shell
+	[] "type test.txt" 
+[] figure out the tools
+[]
+[]
+[]
