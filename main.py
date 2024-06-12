@@ -1,30 +1,21 @@
-import subprocess
+import subprocess # this module will execute a child program in a new process
+import os
 
-
-# Run RBCmd.exe with arguments and capture output
-# result = subprocess.Popen(
-#     ['RBCmd'], 
-#     capture_output=True, 
-#     text=True, 
-#     cwd='/Dependencies/RBCmd'  # Set the working directory
-# )
-
-process = subprocess.Popen(
-    ['RBCmd'], 
-    cwd="/Dependencies/RBCmd", 
-    stdout=subprocess.PIPE, 
-    stderr=subprocess.PIPE, 
+RBCmd_process = subprocess.Popen(
+    ["RBCmd.exe"],
     shell=True
 )
 
-# Communicate with the process (send input and receive output)
-stdout, stderr = process.communicate()
+# # Communicate with the process (send input and receive output)
+# stdout, stderr = RBCmd.communicate()
 
-# Print the output
-print("Output:", stdout.decode())
-print("Errors:", stderr.decode())
+# # print the output
+# print("Output:", stdout)
+# print("Errors:", stderr)
 
-print(result.stdout)
+# Check the return code
+if RBCmd_process.returncode != 0:
+    print(f"Command failed with return code {RBCmd_process.returncode}")
 
 
 
