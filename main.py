@@ -41,6 +41,3 @@ if __name__ == "__main__":
 # # Check the return code
 # if RBCmd_process.returncode != 0:
 #     print(f"Command failed with return code {RBCmd_process.returncode}")
-
-
-
