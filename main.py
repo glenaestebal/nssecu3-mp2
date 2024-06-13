@@ -1,4 +1,7 @@
-import subprocess   #this module will execute a child program in a new process
+import subprocess   # this module will execute a child program in a new process
+import csv
+import os
+import shutil
 
 
 def display():
@@ -10,44 +13,61 @@ def display():
     print("RecentFileCacheParser parses RecentFileCacheParser.bcf files.")
     print("This tool will help analyze the user's deleted files and recently accessed files.\n")
     
-def help():
+        
+def run_RBCmd(output_folder_path):
 
-    print("-d       directory to process")
-    print("-f       file to process")
-    print("-q       only show the filename being processed")
-    print("--csv    directory to save CSV formatted results\n")
+    print("Running RBCmd.exe...")
+
+    if os.path.exists(output_folder_path):
+        try:
+            shutil.rmtree(output_folder_path)
+            print(f"Existing folder removed: {output_folder_path}")
+
+        except Exception as e:
+            print(f"Error removing existing folder: {e}")
+
+    try:
+        
+        subprocess.run(
+            ["mkdir", output_folder_path],
+            shell=True,
+            check=True
+        )
+
+        RBCmd_process = subprocess.Popen(
+            ["RBCmd.exe", "-d", "C:\$Recycle.Bin","--csv", output_folder_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True
+        )
+
+        RBCmd_process.communicate()
+
+        if RBCmd_process.returncode != 0:
+            print(f"Command failed with error: {RBCmd_process.stderr.read()}")
     
-def run_RBCmd():
-    RBCmd_process = subprocess.Popen(
-        ["RBCmd.exe"],
-        shell=True
-    )
+        print(f"Output saved to {output_folder_path}.")
+        
+    except Exception as e:
+        print("Error:", e)
 
-def run_RecentFileCacheParser():
-    RecentFileCacheParser_process = subprocess.Popen(
-        ["RecentFileCacheParser.exe"],
-        shell=True
-    )
 
-# def run_executable(executable_name, args):
-#     process = subprocess.Popen(
-#         [executable_name] + args,
-#         stdout = subprocess.PIPE,
-#         stderr = subprocess.PIPE,
+# def run_RecentFileCacheParser():
+#     RecentFileCacheParser_process = subprocess.Popen(
+#         ["RecentFileCacheParser.exe"],
 #         shell=True
 #     )
 
-#     stdout, stderr = process.communicate()
-
-
 def main():
-    display()
-    help()
-    directory_to_process = print(input("Path of directory to process? "))
-    file_to_process = print(input("Path of file to process? "))
 
-    RBCmd_output = run_RBCmd()
-    RecentFileCacheParser_output = run_RecentFileCacheParser()
+    display()
+
+    current_directory = os.getcwd()
+    output_folder = "Output"
+    output_folder_path = os.path.join(current_directory, output_folder)
+    RBCmd_output = run_RBCmd(output_folder_path)
+    # RecentFileCacheParser_output = run_RecentFileCacheParser()
 
     # with open(output_path, 'w') as file:
     #     file.write(RBCmd_output)
