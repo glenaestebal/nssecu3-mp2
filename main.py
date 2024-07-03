@@ -75,7 +75,7 @@ def main():
     display()
 
     current_directory = os.getcwd()
-    output_folder = "Output"
+    output_folder = "Individual Outputs"
     output_folder_path = os.path.join(current_directory, output_folder)
 
     if os.path.exists(output_folder_path):
