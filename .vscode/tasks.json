@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run CMD as Admin",
+            "type": "shell",
+            "command": "powershell.exe",
+            "args": [
+                "Start-Process",
+                "cmd.exe",
+                "-Verb",
+                "runAs"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

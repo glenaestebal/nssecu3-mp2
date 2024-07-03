@@ -3,8 +3,9 @@ TO DO
 
 [x] run the tools (needed to download .NET framework)
 [x] figure out how to run an external process
-[] figure out what should be the use of the tool
-[] establish how to use them
-[] run with arguments
-[] capture output
+[x] figure out what should be the use of the tool
+[x] establish how to use them
+[x] run with arguments
+[] capture output together
+[x] capture output individually
 
