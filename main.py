@@ -13,19 +13,16 @@ def display():
     print("\nRBCmd is Windows Recycle Bin artifact parser.")
     print("AmcacheParser parses Amcache.hve files, which contain metadata related to applications, their installation paths, and execution history.")
     print("This tool will help analyze when the user installed and deleted applications and/or files.\n")
+
+    print("\nMake sure to run your command prompt as an Administrator or you won't see the Amcache file!")
     
         
 def run_RBCmd(output_folder_path):
 
     print("Running RBCmd.exe...")
 
-    # if os.path.exists(output_folder_path):
-    #     shutil.rmtree(output_folder_path)
-
     try:
 
-        # os.makedirs(output_folder_path)
-        # print(f"Directory created: {output_folder_path}")
         RBCmd_process = subprocess.Popen(
             ["RBCmd.exe", "-d", "C:\\$Recycle.Bin","--csv", output_folder_path],
             # stdin=subprocess.PIPE,
@@ -51,12 +48,7 @@ def run_AmcacheParser(output_folder_path):
 
     print("Running AmcacheParser.exe...")
 
-    # if os.path.exists(output_folder_path):
-    #     shutil.rmtree(output_folder_path)
-
     try:
-        # os.makedirs(output_folder_path)
-        # print(f"Directory created: {output_folder_path}")
         AmcacheParser_process = subprocess.Popen(
             ["AmcacheParser.exe", "-f", "%WINDIR%\\appcompat\\Programs\\Amcache.hve","--csv", output_folder_path],
             # stdin=subprocess.PIPE,
