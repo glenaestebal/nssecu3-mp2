@@ -3,6 +3,7 @@ import csv
 import os
 import shutil
 import pandas as pd
+from datetime import datetime, timezone
 
 
 def display():
@@ -79,14 +80,18 @@ def find_csv_file(directory, pattern):
 
 def combine_selected_columns(output_folder):
     rb_cmd_csv = find_csv_file(output_folder, "RBCmd_Output")
-    amcache_csv = find_csv_file(output_folder, "ProgramEntries")
-
+    amcache_program_entries_csv = find_csv_file(output_folder, "ProgramEntries")
+    amcache_associated_files_csv = find_csv_file(output_folder, "AssociatedFileEntries")
+    amcache_unassociated_files_csv = find_csv_file(output_folder, "UnassociatedFileEntries")
+    
     combined_excel_path = os.path.join(output_folder, "Combined Output.xlsx")
 
     rb_cmd_cols = ['FileName', 'DeletedOn']  
-    amcache_cols = ['Name', 'InstallDate'] 
+    amcache_program_entries_cols = ['Name', 'Publisher', 'InstallDate', 'RegistryKeyPath', 'RootDirPath']
+    amcache_associated_cols = ['ApplicationName', 'FullPath', 'Name', 'FileExtension', 'LinkDate'] 
+    amcache_unassociated_cols = ['FullPath', 'Name', 'FileExtension', 'LinkDate']
 
-    combined_data = pd.DataFrame()
+    combined_data = pd.DataFrame() 
 
     if os.path.exists(rb_cmd_csv):
         rb_cmd_df = pd.read_csv(rb_cmd_csv, usecols=rb_cmd_cols)
@@ -94,15 +99,49 @@ def combine_selected_columns(output_folder):
     else:
         print(f"RBCmd output file not found: {rb_cmd_csv}")
 
-    if os.path.exists(amcache_csv):
-        amcache_df = pd.read_csv(amcache_csv, usecols=amcache_cols)
-        combined_data = pd.concat([combined_data, amcache_df], axis=1)
+    if os.path.exists(amcache_program_entries_csv):
+        amcache_program_entries_df = pd.read_csv(amcache_program_entries_csv, usecols=amcache_program_entries_cols)
+        combined_data = pd.concat([combined_data, amcache_program_entries_df], axis=1)
     else:
-        print(f"AmcacheParser output file not found: {amcache_csv}")
+        print(f"AmcacheParser ProgramEntries output file not found: {amcache_program_entries_csv}")
+
+    if os.path.exists(amcache_associated_files_csv):
+        amcache_associated_df = pd.read_csv(amcache_associated_files_csv, usecols=amcache_associated_cols)
+        combined_data = pd.concat([combined_data, amcache_associated_df], axis=1)
+    else:
+        print(f"AmcacheParser AssociatedFileEntries output file not found: {amcache_associated_files_csv}")
+
+    if os.path.exists(amcache_unassociated_files_csv):
+        amcache_unassociated_df = pd.read_csv(amcache_unassociated_files_csv, usecols=amcache_unassociated_cols)
+        combined_data = pd.concat([combined_data, amcache_unassociated_df], axis=1)
+    else:
+        print(f"AmcacheParser UnassociatedFileEntries output file not found: {amcache_unassociated_files_csv}")
+
+    combined_data = combined_data.loc[:, ~combined_data.columns.duplicated()]
+
+    rb_cmd_df['DeletedOn'] = pd.to_datetime(rb_cmd_df['DeletedOn']).dt.tz_localize('Asia/Manila').dt.tz_convert('UTC').dt.tz_localize(None)
+    amcache_program_entries_df['InstallDate'] = pd.to_datetime(amcache_program_entries_df['InstallDate']).dt.tz_localize('Asia/Manila').dt.tz_convert('UTC').dt.tz_localize(None)
+    amcache_associated_df['LinkDate'] =  pd.to_datetime(amcache_associated_df['LinkDate']).dt.tz_localize('Asia/Manila').dt.tz_convert('UTC').dt.tz_localize(None)
+    amcache_unassociated_df['LinkDate'] =  pd.to_datetime(amcache_unassociated_df['LinkDate']).dt.tz_localize('Asia/Manila').dt.tz_convert('UTC').dt.tz_localize(None)
+
+    rb_cmd_df.rename(columns={'DeletedOn': 'DeletedOn (Normalized UTC+0)'}, inplace=True)
+    amcache_program_entries_df.rename(columns={'InstallDate': 'InstallDate (Normalized UTC+0)'}, inplace=True)
+    amcache_associated_df.rename(columns={'LinkDate': 'LinkDate (Normalized UTC+0)'}, inplace=True)
+    amcache_unassociated_df.rename(columns={'LinkDate': 'LinkDate (Normalized UTC+0)'}, inplace=True)
+
 
     with pd.ExcelWriter(combined_excel_path, engine='openpyxl') as writer:
-        rb_cmd_df.to_excel(writer, sheet_name='RBCmd', index=False)
-        amcache_df.to_excel(writer, sheet_name='Amcache', index=False)
+        if 'rb_cmd_df' in locals():
+            rb_cmd_df.to_excel(writer, sheet_name='RBCmd', index=False)
+        if 'amcache_program_entries_df' in locals():
+            amcache_program_entries_df.to_excel(writer, sheet_name='Amcache Program Entries', index=False)
+        if 'amcache_associated_df' in locals():
+            amcache_associated_df.to_excel(writer, sheet_name='Amcache Associated Files', index=False)
+        if 'amcache_unassociated_df' in locals():
+            amcache_unassociated_df.to_excel(writer, sheet_name='Amcache Unassociated Files', index=False)
+        # rb_cmd_df.to_excel(writer, sheet_name='RBCmd', index=False)
+        # amcache_associated_df.to_excel(writer, sheet_name='Amcache Associated Files', index=False)
+        # amcache_unassociated_df.to_excel(writer, sheet_name='Amcache Unassociated Files', index=False)
     print(f"Combined Excel file created: {combined_excel_path}")
 
 def main():

@@ -8,5 +8,7 @@ TO DO
 [x] run with arguments
 [] capture output together
     [] fix timestamp
+        [x] install date
+        [] LinkDate
 [x] capture output individually
 
