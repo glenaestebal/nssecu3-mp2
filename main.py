@@ -18,14 +18,14 @@ def display():
     print("\nMake sure to run your command prompt as an Administrator or you won't see the Amcache file!\n")
     
         
-def run_RBCmd(individual_output_folder_path):
+def run_RBCmd(output_folder):
 
     print("Running RBCmd.exe...")
 
     try:
 
         RBCmd_process = subprocess.Popen(
-            ["RBCmd.exe", "-d", "C:\\$Recycle.Bin","--csv", individual_output_folder_path],
+            ["RBCmd.exe", "-d", "C:\\$Recycle.Bin","--csv", output_folder],
             # stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -45,13 +45,13 @@ def run_RBCmd(individual_output_folder_path):
         print("Error:", e)
 
 
-def run_AmcacheParser(individual_output_folder_path):
+def run_AmcacheParser(output_folder):
 
     print("Running AmcacheParser.exe...")
 
     try:
         AmcacheParser_process = subprocess.Popen(
-            ["AmcacheParser.exe", "-f", "%WINDIR%\\appcompat\\Programs\\Amcache.hve", "-i", "--csv", individual_output_folder_path],
+            ["AmcacheParser.exe", "-f", "%WINDIR%\\appcompat\\Programs\\Amcache.hve", "-i", "--csv", output_folder],
             # stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -77,10 +77,11 @@ def find_csv_file(directory, pattern):
     return None
 
 
-def combine_selected_columns(combined_output_folder_path):
-    rb_cmd_csv = find_csv_file(individual_output_folder, "RBCmd_Output")
-    amcache_csv = find_csv_file(individual_output_folder, "ProgramEntries")
-    combined_excel_path = os.path.join(combined_output_folder_path, "Combined Output.csv")
+def combine_selected_columns(output_folder):
+    rb_cmd_csv = find_csv_file(output_folder, "RBCmd_Output")
+    amcache_csv = find_csv_file(output_folder, "ProgramEntries")
+
+    combined_excel_path = os.path.join(output_folder, "Combined Output.xlsx")
 
     rb_cmd_cols = ['FileName', 'DeletedOn']  
     amcache_cols = ['Name', 'InstallDate'] 
@@ -99,7 +100,9 @@ def combine_selected_columns(combined_output_folder_path):
     else:
         print(f"AmcacheParser output file not found: {amcache_csv}")
 
-    combined_data.to_excel(combined_excel_path, index=False)
+    with pd.ExcelWriter(combined_excel_path, engine='openpyxl') as writer:
+        rb_cmd_df.to_excel(writer, sheet_name='RBCmd', index=False)
+        amcache_df.to_excel(writer, sheet_name='Amcache', index=False)
     print(f"Combined Excel file created: {combined_excel_path}")
 
 def main():
@@ -107,23 +110,23 @@ def main():
     display()
 
     current_directory = os.getcwd()
-    individual_output_folder = "Individual Outputs"
-    combined_output_folder = "Combined Output"
-    individual_output_folder_path = os.path.join(current_directory, individual_output_folder)
-    combined_output_folder_path = os.path.join(current_directory, combined_output_folder)
+    output_folder = "Output"
+    # individual_output_folder_path = os.path.join(current_directory, individual_output_folder)
+    output_folder_path = os.path.join(current_directory, output_folder)
 
-    if os.path.exists(individual_output_folder_path):
-        shutil.rmtree(individual_output_folder_path)
-        print(f"Directory exists. Existing folder removed: {individual_output_folder_path}")
+    if os.path.exists(output_folder):
+        shutil.rmtree(output_folder)
+        print(f"Directory exists. Existing folder removed: {output_folder}")
 
     try:
-        os.makedirs(individual_output_folder)
-        print(f"Output folder created: {individual_output_folder_path}\n")
+        os.makedirs(output_folder)
+        print(f"Output folder created: {output_folder}\n")
     except FileExistsError:
-        print(f"Output folder already exists: {individual_output_folder_path}")
+        print(f"Output folder already exists: {output_folder}")
 
-    run_RBCmd(individual_output_folder_path)
-    run_AmcacheParser(individual_output_folder_path)
+    run_RBCmd(output_folder)
+    run_AmcacheParser(output_folder)
+    combine_selected_columns(output_folder_path)
 
 
 if __name__ == "__main__":
