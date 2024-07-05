@@ -6,9 +6,9 @@ TO DO
 [x] figure out what should be the use of the tool
 [x] establish how to use them
 [x] run with arguments
-[] capture output together
-    [] fix timestamp
+[x] capture output together
+    [x] fix timestamp
         [x] install date
-        [] LinkDate
+        [x] LinkDate
 [x] capture output individually
 
