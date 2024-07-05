@@ -1,11 +1,10 @@
 import subprocess   # this module will execute a child program in a new process
-import csv
-import os
-import shutil
-import pandas as pd
-from datetime import datetime, timezone
+import os           # module for interacting with the operating system
+import shutil       # high-level file operations
+import pandas as pd # a library for data manipulation and analysis
+from datetime import datetime, timezone # module for working with dates and times
 
-
+# display() function, for displaying the project description
 def display():
     print("   ___  ___  _____         __    __    ___                      __       ___                      ")
     print("  / _ \\/ _ )/ ___/_ _  ___/ / __/ /_  / _ | __ _  _______ _____/ /  ___ / _ \\___ ________ ___ ____")
@@ -18,16 +17,14 @@ def display():
 
     print("\nMake sure to run your command prompt as an Administrator or you won't see the Amcache file!\n")
     
-        
+# run_RBCmd() function        
 def run_RBCmd(output_folder):
-
     print("Running RBCmd.exe...")
 
     try:
 
         RBCmd_process = subprocess.Popen(
             ["RBCmd.exe", "-d", "C:\\$Recycle.Bin","--csv", output_folder],
-            # stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -46,14 +43,13 @@ def run_RBCmd(output_folder):
         print("Error:", e)
 
 
+# run_AmcacheParser() function
 def run_AmcacheParser(output_folder):
-
     print("Running AmcacheParser.exe...")
 
     try:
         AmcacheParser_process = subprocess.Popen(
             ["AmcacheParser.exe", "-f", "%WINDIR%\\appcompat\\Programs\\Amcache.hve", "-i", "--csv", output_folder],
-            # stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
@@ -71,13 +67,14 @@ def run_AmcacheParser(output_folder):
     except Exception as e:
         print("Error:", e)
 
+# find_csv_file() function
 def find_csv_file(directory, pattern):
     for file in os.listdir(directory):
         if file.endswith(".csv") and pattern in file:
             return os.path.join(directory, file)
     return None
 
-
+# combine_selected_columns () function
 def combine_selected_columns(output_folder):
     rb_cmd_csv = find_csv_file(output_folder, "RBCmd_Output")
     amcache_program_entries_csv = find_csv_file(output_folder, "ProgramEntries")
@@ -139,18 +136,15 @@ def combine_selected_columns(output_folder):
             amcache_associated_df.to_excel(writer, sheet_name='Amcache Associated Files', index=False)
         if 'amcache_unassociated_df' in locals():
             amcache_unassociated_df.to_excel(writer, sheet_name='Amcache Unassociated Files', index=False)
-        # rb_cmd_df.to_excel(writer, sheet_name='RBCmd', index=False)
-        # amcache_associated_df.to_excel(writer, sheet_name='Amcache Associated Files', index=False)
-        # amcache_unassociated_df.to_excel(writer, sheet_name='Amcache Unassociated Files', index=False)
+
     print(f"Combined Excel file created: {combined_excel_path}")
 
+# main() function
 def main():
-
     display()
 
     current_directory = os.getcwd()
     output_folder = "Output"
-    # individual_output_folder_path = os.path.join(current_directory, individual_output_folder)
     output_folder_path = os.path.join(current_directory, output_folder)
 
     if os.path.exists(output_folder):
